@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  globalSetup: './tests/auth.setup.js',
   timeout: 60_000,
   retries: 1,
   fullyParallel: true,
@@ -13,6 +14,7 @@ export default defineConfig({
 
   use: {
     baseURL: 'https://www.saucedemo.com/',
+    storageState: 'storageState.json', 
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',

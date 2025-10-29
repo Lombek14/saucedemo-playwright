@@ -1,9 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth.js';
+//import { login } from './helpers/auth.js';
+test.use({ storageState: 'storageState.json' });
 
 test('Checkout flow: add to cart → finish order', async ({ page }) => {
   // Log in
-  await login(page);
+  //await login(page);
+
+  // Start already authenticated on inventory page
+  await page.goto('/inventory.html');  // ✅ you’re already authenticated
 
   // Add item and go to cart
   await page.click('[data-test="add-to-cart-sauce-labs-backpack"]');
