@@ -2,10 +2,24 @@
   "name": "saucedemo-playwright",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "playwright test"
-  },
+"main": "index.js",
+"scripts": {
+  "test": "playwright test",
+  "report": "playwright show-report",
+  "headed": "playwright test --headed",
+  "trace": "playwright test --trace on-first-retry",
+  "grep": "playwright test -g",
+  "debug:chromium": "playwright test --project=Chromium --debug",
+  "debug:firefox": "playwright test --project=Firefox --debug",
+  "debug:webkit": "playwright test --project=WebKit --debug",
+  "test:debug": "node --inspect-brk node_modules/@playwright/test/cli.js test --project=Chromium --headed --timeout=0",
+  "install:browsers": "playwright install --with-deps",
+
+  "ci": "npm ci && npx playwright install --with-deps && npx playwright test --reporter=html",
+
+  "debug:ps": "$Env:PWDEBUG=1; npx playwright test",
+  "debug:cmd": "set PWDEBUG=1&& npx playwright test"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
