@@ -25,6 +25,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
+    testIdAttribute: 'data-test',
   },
 
   // Run the same tests on all 3 engines
