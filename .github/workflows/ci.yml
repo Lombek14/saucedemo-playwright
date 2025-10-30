@@ -6,11 +6,11 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 6 * * *'  # nightly at 06:00 UTC
+    - cron: '0 6 * * *' # nightly at 06:00 UTC
 
 jobs:
   tests:
-    name: CI (smoke on PR; full on push) — shard ${{ matrix.index }} of ${{ matrix.total }}
+    name: CI (smoke on PR; full on push) - shard ${{ matrix.index }} of ${{ matrix.total }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -43,10 +43,9 @@ jobs:
           HTTPS_PROXY: ""
 
           ALL_PROXY: ""
-
-          NO_PROXY: "localhost,127.0.0.1"
-          
+          NO_PROXY: "localhost,127.0.0.1,.saucedemo.com"
         run: |
+          unset HTTP_PROXY HTTPS_PROXY ALL_PROXY || true
           SHARD="${{ matrix.index }}/${{ matrix.total }}"
           CMD="npx playwright test --shard=$SHARD"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -73,7 +72,7 @@ jobs:
           retention-days: 7
 
   nightly:
-    name: Nightly @regression — shard ${{ matrix.index }} of ${{ matrix.total }}
+    name: Nightly @regression - shard ${{ matrix.index }} of ${{ matrix.total }}
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     strategy:
@@ -83,25 +82,33 @@ jobs:
         total: [3]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
 
       - name: Run @regression (sharded)
+        shell: bash
         env:
           HTTP_PROXY: ""
 
           HTTPS_PROXY: ""
-
+          
           ALL_PROXY: ""
-
-          NO_PROXY: "localhost,127.0.0.1"
-
-        run: npx playwright test --grep @regression --shard=${{ matrix.index }}/${{ matrix.total }}
+          NO_PROXY: "localhost,127.0.0.1,.saucedemo.com"
+        run: |
+          unset HTTP_PROXY HTTPS_PROXY ALL_PROXY || true
+          npx playwright test --grep @regression --shard=${{ matrix.index }}/${{ matrix.total }}
 
       - name: Upload HTML report
         if: always()
