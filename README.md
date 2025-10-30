@@ -1,42 +1,22 @@
 # saucedemo-playwright
-## Test Strategy
+[![Playwright Tests](https://github.com/Lombek14/saucedemo-playwright/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Lombek14/saucedemo-playwright/actions/workflows/ci.yml)
 
-### Why Playwright
-- **Cross-browser + device**: single test API runs on Chromium, Firefox, WebKit (desktop/mobile).
-- **Fast + reliable**: auto-wait, locator assertions, parallel workers, retries, sharding.
-- **Great DX**: trace viewer, codegen, UI Mode, rich reporters.
-- **First-class API testing**: built-in `request` fixtures for API/contract checks.
+Cross-browser Playwright tests for the **SauceDemo** site, including UI smoke/regression and lightweight API checks.  
+CI runs on every push/PR (smoke) and nightly (full regression), with sharding + uploaded artifacts (HTML report & traces).
 
 ---
 
-### Test Types & Tags
-- `@smoke` — critical paths that must pass on every commit (fast, < 2–3 min).
-- `@regression` — fuller coverage, runs on PR + nightly.
-- (Optional) `@a11y` — lightweight accessibility smoke.
+## Quick start (local)
 
-**Run locally**
 ```bash
-# all tests in all browsers
+# 1) install deps
+npm ci
+
+# 2) install browsers (first time only)
+npx playwright install --with-deps
+
+# 3) run everything (all browsers)
 npx playwright test
 
-# smoke only (all browsers)
-npx playwright test --grep @smoke
-
-# regression only in Chromium, headed, with UI Mode
-npx playwright test --grep @regression --project=Chromium --headed --ui
-
-# open last HTML report
+# 4) open the last HTML report
 npx playwright show-report
-
-
-Cross-browser Playwright tests for SauceDemo.
-
-[![Playwright Tests](https://github.com/Lombek14/saucedemo-playwright/actions/workflows/ci.yml/badge.svg)](https://github.com/Lombek14/saucedemo-playwright/actions/workflows/ci.yml)
-
-## Run locally
-```bash
-npm ci
-npx playwright install --with-deps
-npm test
-npm run report
-
