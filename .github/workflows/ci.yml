@@ -35,9 +35,18 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-        
+
       - name: Run tests (sharded)
         shell: bash
+        env:
+          HTTP_PROXY: ""
+          http_proxy: ""
+          HTTPS_PROXY: ""
+          https_proxy: ""
+          ALL_PROXY: ""
+          all_proxy: ""
+          NO_PROXY: "localhost,127.0.0.1"
+          no_proxy: "localhost,127.0.0.1"
         run: |
           SHARD="${{ matrix.index }}/${{ matrix.total }}"
           CMD="npx playwright test --shard=$SHARD"
@@ -47,7 +56,7 @@ jobs:
           echo "Running: $CMD"
           $CMD
 
-
+          
       - name: Upload HTML report
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,15 +85,31 @@ jobs:
         total: [3]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
 
       - name: Run @regression (sharded)
+        env:
+          HTTP_PROXY: ""
+          http_proxy: ""
+          HTTPS_PROXY: ""
+          https_proxy: ""
+          ALL_PROXY: ""
+          all_proxy: ""
+          NO_PROXY: "localhost,127.0.0.1"
+          no_proxy: "localhost,127.0.0.1"
         run: npx playwright test --grep @regression --shard=${{ matrix.index }}/${{ matrix.total }}
 
       - name: Upload HTML report

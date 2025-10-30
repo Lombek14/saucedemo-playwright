@@ -1,5 +1,12 @@
 // playwright.config.js
+import 'dotenv/config';
 import { defineConfig, devices } from '@playwright/test';
+
+
+// Load .env in local dev; CI will inject env vars
+if (process.env.NODE_ENV !== 'production') {
+  try { await import('dotenv').then(m => m.config()); } catch {}
+}
 
 export default defineConfig({
   testDir: './tests',
