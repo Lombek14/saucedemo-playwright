@@ -2,11 +2,22 @@ name: Playwright Tests
 
 on:
   push:
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 6 * * *' # nightly at 06:00 UTC
 
 jobs:
-  test:
+  tests:
+    name: CI (exclude @smoke/@regression) — shard ${{ matrix.index }} of ${{ matrix.total }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [1, 2, 3]
+        total: [3]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,21 +34,72 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run tests (HTML report)
-        run: npx playwright test --reporter=html
+      - name: Run tests (exclude @smoke and @regression)
+        shell: bash
+        env:
+          HTTP_PROXY: ""
+          HTTPS_PROXY: ""
+          ALL_PROXY: ""
+          NO_PROXY: "localhost,127.0.0.1,.saucedemo.com"
+        run: |
+          SHARD="${{ matrix.index }}/${{ matrix.total }}"
+          # Exclude any tests tagged @smoke or @regression:
+          CMD="npx playwright test --shard=$SHARD --grep-invert '@smoke|@regression'"
+          echo "Running: $CMD"
+          $CMD
 
       - name: Upload HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-html-report-${{ matrix.index }}-of-${{ matrix.total }}
           path: playwright-report
           retention-days: 7
 
-      - name: Upload traces & videos (on failure)
-        if: failure()
+      - name: Upload traces & screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: test-results
+          name: traces-${{ matrix.index }}-of-${{ matrix.total }}
+          path: test-results/**/trace.zip
+          if-no-files-found: ignore
           retention-days: 7
+
+  nightly:
+    name: Nightly (exclude @smoke/@regression) — shard ${{ matrix.index }} of ${{ matrix.total }}
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [1, 2, 3]
+        total: [3]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      - name: Run nightly (exclude @smoke and @regression)
+        run: npx playwright test --grep-invert '@smoke|@regression' --shard=${{ matrix.index }}/${{ matrix.total }}
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-playwright-html-report-${{ matrix.index }}-of-${{ matrix.total }}
+          path: playwright-report
+          retention-days: 14
+
+      - name: Upload traces & screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-traces-${{ matrix.index }}-of-${{ matrix.total }}
+          path: test-results/**/trace.zip
+          if-no-files-found: ignore
+          retention-days: 14

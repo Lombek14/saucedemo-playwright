@@ -1,26 +1,14 @@
-// playwright.config.js
+// playwright.config.js (only the relevant bits)
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  globalSetup: './tests/auth.setup.js',
-  timeout: 60_000,
-  retries: 1,
-  fullyParallel: true,
-  workers: 4,
-
-  // HTML report (auto-opens after run)
-  reporter: [['html', { open: 'never' }]],
-
   use: {
-    baseURL: 'https://www.saucedemo.com/',
-    storageState: 'storageState.json', 
+    baseURL: process.env.UI_BASE_URL || 'https://www.saucedemo.com',
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    trace: 'on-first-retry',
   },
-
-  // Run the same tests on all 3 engines
   projects: [
     { name: 'Chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'Firefox',  use: { ...devices['Desktop Firefox'] } },

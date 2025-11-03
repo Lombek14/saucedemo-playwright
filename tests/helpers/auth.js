@@ -1,6 +1,8 @@
+// tests/helpers/auth.js
 export async function login(page) {
-  await page.goto('/');
-  await page.fill('#user-name', 'standard_user');
-  await page.fill('#password', 'secret_sauce');
-  await page.click('#login-button');
+  // Always start from home, then log in
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.locator('#user-name').fill('standard_user');              // by id
+  await page.locator('[data-test="password"]').fill('secret_sauce');   // by data-test
+  await page.locator('[data-test="login-button"]').click();
 }

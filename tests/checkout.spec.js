@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 //import { login } from './helpers/auth.js';
 test.use({ storageState: 'storageState.json' });
 
+test.skip(({ browserName }) => browserName !== 'chromium', 'UI regression runs only on Chromium');
 test('Checkout flow: add to cart → finish order', async ({ page }) => {
   // Log in
   //await login(page);
@@ -34,4 +35,22 @@ test('Checkout flow: add to cart → finish order', async ({ page }) => {
   await page.click('[data-test="back-to-products"]');
   await page.click('#react-burger-menu-btn');
   await page.click('#logout_sidebar_link');
+});
+
+    // New test to checkout flow regression suite
+test('@regression Checkout flow: add to cart → finish order', async ({ page }) => {
+  await page.goto('/inventory.html');
+  await page.waitForLoadState('networkidle');
+
+  await page.getByTestId('add-to-cart-sauce-labs-backpack').click();
+  await page.locator('.shopping_cart_link').click();
+
+  await page.getByTestId('checkout').click();
+  await page.getByTestId('firstName').fill('Mahoula');
+  await page.getByTestId('lastName').fill('Dosso');
+  await page.getByTestId('postalCode').fill('73301');
+  await page.getByTestId('continue').click();
+
+  await page.getByTestId('finish').click();
+  await expect(page.locator('.complete-header')).toHaveText(/Thank you for your order/i, { timeout: 5000 });
 });
