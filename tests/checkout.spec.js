@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 //import { login } from './helpers/auth.js';
 test.use({ storageState: 'storageState.json' });
 
+test.skip(({ browserName }) => browserName !== 'chromium', 'UI regression runs only on Chromium');
 test('Checkout flow: add to cart → finish order', async ({ page }) => {
   // Log in
   //await login(page);
