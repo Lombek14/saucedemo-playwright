@@ -11,3 +11,4 @@ playwright/.cache/
 Thumbs.db
 .vscode/
 storageState.json
+.env
