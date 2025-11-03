@@ -10,7 +10,7 @@ on:
 
 jobs:
   tests:
-    name: CI (smoke on PR; full on push) - shard ${{ matrix.index }} of ${{ matrix.total }}
+    name: CI (exclude @smoke/@regression) — shard ${{ matrix.index }} of ${{ matrix.total }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -34,23 +34,17 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-
-      - name: Run tests (sharded)
+      - name: Run tests (exclude @smoke and @regression)
         shell: bash
         env:
           HTTP_PROXY: ""
-
           HTTPS_PROXY: ""
-
           ALL_PROXY: ""
           NO_PROXY: "localhost,127.0.0.1,.saucedemo.com"
         run: |
-          unset HTTP_PROXY HTTPS_PROXY ALL_PROXY || true
           SHARD="${{ matrix.index }}/${{ matrix.total }}"
-          CMD="npx playwright test --shard=$SHARD"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            CMD="$CMD --grep @smoke"
-          fi
+          # Exclude any tests tagged @smoke or @regression:
+          CMD="npx playwright test --shard=$SHARD --grep-invert '@smoke|@regression'"
           echo "Running: $CMD"
           $CMD
 
@@ -72,7 +66,7 @@ jobs:
           retention-days: 7
 
   nightly:
-    name: Nightly @regression - shard ${{ matrix.index }} of ${{ matrix.total }}
+    name: Nightly (exclude @smoke/@regression) — shard ${{ matrix.index }} of ${{ matrix.total }}
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     strategy:
@@ -82,33 +76,16 @@ jobs:
         total: [3]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps
 
-      - name: Install deps
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run @regression (sharded)
-        shell: bash
-        env:
-          HTTP_PROXY: ""
-
-          HTTPS_PROXY: ""
-          
-          ALL_PROXY: ""
-          NO_PROXY: "localhost,127.0.0.1,.saucedemo.com"
-        run: |
-          unset HTTP_PROXY HTTPS_PROXY ALL_PROXY || true
-          npx playwright test --grep @regression --shard=${{ matrix.index }}/${{ matrix.total }}
+      - name: Run nightly (exclude @smoke and @regression)
+        run: npx playwright test --grep-invert '@smoke|@regression' --shard=${{ matrix.index }}/${{ matrix.total }}
 
       - name: Upload HTML report
         if: always()
