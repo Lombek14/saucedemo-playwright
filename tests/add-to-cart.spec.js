@@ -1,17 +1,23 @@
 // tests/add-to-cart.spec.js
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth.js';
+import { LoginPage } from '../pages/LoginPage';
+import { InventoryPage } from '../pages/InventoryPage';
 
 // Optional per-file parallel (global config is already parallel)
 test.describe.configure({ mode: 'parallel' });
 
-test('Add product to cart', async ({ page }) => {
-  await login(page);                                 // <- log in first
-  await page.goto('/inventory.html');                // (safe & explicit)
+test('Add backpack to cart', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const inv = new InventoryPage(page);
 
-  await page.click('[data-test="add-to-cart-sauce-labs-backpack"]');
-  await page.click('.shopping_cart_link');
+  await loginPage.goto();
+  await loginPage.login();
+  await inv.addBackpackToCart();  
+  await inv.openCart();
 
-  await expect(page.locator('.inventory_item_name'))
-    .toContainText('Sauce Labs Backpack');
+  await expect(page).toHaveURL(/cart\.html/);   // Verify we are on the cart page
+  await expect(page.locator('.cart_item')).toHaveCount(1); // Verify one item in cart
+
+  // Verify the correct item is in the cart
+  await expect(page.locator('.inventory_item_name')).toContainText('Sauce Labs Backpack'); 
 });

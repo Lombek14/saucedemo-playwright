@@ -1,34 +1,28 @@
 // tests/checkout.spec.js
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth.js';
+import { LoginPage } from '../pages/LoginPage';
+import { InventoryPage } from '../pages/InventoryPage';
+import { CheckoutPage } from '../pages/CheckoutPage';
 
-test('Checkout flow: add to cart → finish order', async ({ page }) => {
-  await login(page);                                 // <- log in first
-  await page.goto('/inventory.html');
+// Optional per-file parallel (global config is already parallel)
+test.describe.configure({ mode: 'parallel' });
 
-  // Add item and go to cart
-  await page.click('[data-test="add-to-cart-sauce-labs-backpack"]');
-  await page.click('.shopping_cart_link');
+test('Complete checkout process', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    const inv = new InventoryPage(page);
+    const checkout = new CheckoutPage(page);
 
-  // Start checkout
-  await page.click('[data-test="checkout"]');
-  await page.fill('[data-test="firstName"]', 'Mahoula');
-  await page.fill('[data-test="lastName"]',  'Dosso');
-  await page.fill('[data-test="postalCode"]','73301');
-  await page.click('[data-test="continue"]');
+    await loginPage.goto();
+    await loginPage.login();
+    await inv.addBackpackToCart();
+    await inv.openCart();
 
-  // Verify overview
-  await expect(page.locator('.title')).toHaveText('Checkout: Overview');
-  await expect(page.locator('.inventory_item_name'))
-    .toContainText('Sauce Labs Backpack');
+    await checkout.start();
+    await checkout.fillForm();
+    await checkout.finish();
+    await expect(page).toHaveURL(/checkout-complete\.html/);
 
-  // Finish and validate success
-  await page.click('[data-test="finish"]');
-  await expect(page.locator('.complete-header'))
-    .toHaveText('Thank you for your order!');
+    await checkout.expectSuccess();
+    await checkout.backToHome();
 
-  // (Optional) back home & log out
-  await page.click('[data-test="back-to-products"]');
-  await page.click('#react-burger-menu-btn');
-  await page.click('#logout_sidebar_link');
 });
