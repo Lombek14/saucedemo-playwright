@@ -20,7 +20,7 @@ test('Complete checkout process', async ({ page }) => {
     await checkout.start();
     await checkout.fillForm();
     await checkout.finish();
-    await expect(page).toHaveURL(/checkout-complete\.html/);
+    await expect(page).toHaveURL(/checkout-complete\.html/); // Verify we are on the checkout complete page
 
     await checkout.expectSuccess();
     await checkout.backToHome();
