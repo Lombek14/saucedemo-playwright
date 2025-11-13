@@ -1,3 +1,4 @@
+// tests/helpers/auth.js
 export async function login(page) {
   await page.goto('/');
   await page.fill('#user-name', 'standard_user');

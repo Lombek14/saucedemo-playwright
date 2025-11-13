@@ -1,16 +1,17 @@
 {
   "name": "saucedemo-playwright",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "playwright test"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "private": true,
   "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ci": "playwright test --reporter=line,html",
+    "pw:install": "playwright install --with-deps",
+    "show-report": "playwright show-report"
+  },
+  
   "devDependencies": {
     "@playwright/test": "^1.56.1"
-  }
+  },
+  "license": "ISC"
 }
