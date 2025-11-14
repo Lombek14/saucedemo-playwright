@@ -1,0 +1,23 @@
+[
+  {
+    "firstName": "Tiger",
+    "lastName": "King",
+    "zipCode": "73301"
+  },
+  {
+    "firstName": "Junior",
+    "lastName": "QA Engineer",
+    "zipCode": "10001"
+  },
+  {
+    "firstName": "Steven",
+    "lastName": "Boiteng",
+    "zipCode": "10111"
+  },
+  {
+    "firstName": "Liliane",
+    "lastName": "Francoise",
+    "zipCode": "70569"
+  }
+
+]
