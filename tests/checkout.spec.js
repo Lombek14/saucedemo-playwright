@@ -7,7 +7,7 @@ import customerData from '../test-data/customerData.json' assert { type: 'json' 
 test.describe('Complete checkout process (data-driven)', () => {
   for (const customer of customerData) {
 
-    test(`Checkout for ${customer.firstName} ${customer.lastName}`, async ({ authPage }) => {
+    test(`@regression Checkout for ${customer.firstName} ${customer.lastName}`, async ({ authPage }) => {
       
       const inv = new InventoryPage(authPage);
       const checkout = new CheckoutPage(authPage);

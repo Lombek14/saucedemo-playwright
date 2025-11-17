@@ -1,11 +1,12 @@
 // tests/login.spec.js
+
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage.js';
 
 // Optional per-file parallel (global config is already parallel)
 test.describe.configure({ mode: 'parallel' });
 
-test('Login page', async ({ page }) => {
+test('@smoke valid user can log in', async ({ page }) => {
 const loginPage = new LoginPage(page);
 
 await loginPage.goto();

@@ -20,6 +20,7 @@ jobs:
       matrix:
         browser: [Chromium, Firefox, WebKit] #for clear report all 3 run at the same time
         shard: [1,2] # split into 2 VM in parallel
+        suite: [smoke, regression] # to run smoke and regression suites
         
     steps:
       - name: Checkout
@@ -38,8 +39,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       
-      - name: Run tests Run tests (project=${{ matrix.browser }}, shard=${{ matrix.shard }}/2)
-        run: npx playwright test --project="${{ matrix.browser }}" --shard=${{ matrix.shard }}/2 --reporter=github,html
+      - name: Run tests Run tests (project=${{ matrix.browser }}, suite=@${{ matrix.suite }}, shard=${{ matrix.shard }}/2)
+        run: npx playwright test --project=${{ matrix.browser }} --grep=@${{ matrix.suite }} --shard=${{ matrix.shard }}/2 --reporter=github,html
 
       # Uses both 'github' (nice summary) and 'html' (artifact)
 
