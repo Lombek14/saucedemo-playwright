@@ -44,7 +44,7 @@ jobs:
       # Uses both 'github' (nice summary) and 'html' (artifact)
 
       - name: Upload HTML report
-        if: always()
+        if: ${{ !env.ACT && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.browser }}-shard${{ matrix.shard }}
@@ -52,7 +52,7 @@ jobs:
           retention-days: 7
 
       - name: Upload traces & videos (on failure)
-        if: failure()
+        if: ${{ !env.ACT && failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.browser }}-shard${{ matrix.shard }}
