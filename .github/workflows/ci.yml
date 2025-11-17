@@ -18,8 +18,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1,2] # run twice in parallel
-
+        browser: [Chromium, Firefox, WebKit] #for clear report all 3 run at the same time
+        shard: [1,2] # split into 2 VM in parallel
+        
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,16 +38,16 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       
-      - name: Run tests (shard ${{ matrix.shard }} of 2)
-        run: npx playwright test --shard=${{ matrix.shard }}/2 --reporter=github,html
+      - name: Run tests Run tests (project=${{ matrix.browser }}, shard=${{ matrix.shard }}/2)
+        run: npx playwright test --project="${{ matrix.browser }}" --shard=${{ matrix.shard }}/2 --reporter=github,html
 
       # Uses both 'github' (nice summary) and 'html' (artifact)
-      
+
       - name: Upload HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.shard }}
+          name: playwright-report-${{ matrix.browser }}-shard${{ matrix.shard }}
           path: playwright-report
           retention-days: 7
 
@@ -54,6 +55,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.shard }}
+          name: test-results-${{ matrix.browser }}-shard${{ matrix.shard }}
           path: test-results
           retention-days: 7
