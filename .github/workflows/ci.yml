@@ -48,7 +48,7 @@ jobs:
         if: ${{ !env.ACT && always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.browser }}-shard${{ matrix.shard }}
+          name: playwright-report-${{ matrix.browser }}-${{ matrix.suite }}-shard${{ matrix.shard }}
           path: playwright-report
           retention-days: 7
 
@@ -56,6 +56,7 @@ jobs:
         if: ${{ !env.ACT && failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.browser }}-shard${{ matrix.shard }}
+          name: test-results-${{ matrix.browser }}-${{ matrix.suite }}-shard${{ matrix.shard }}
           path: test-results
           retention-days: 7
+          if-no-files-found: ignore    # prevent no traces failure 
