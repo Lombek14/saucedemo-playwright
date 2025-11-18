@@ -4,15 +4,16 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   timeout: 60_000,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   fullyParallel: true,
   workers: '50%',
-
-  // HTML report (don’t auto-open)
-  reporter: [['html', { open: 'never' }]],
+  expect: 5000, 
+  reporter: [['html', { open: 'never' }]],  // HTML report (don’t auto-open)
 
   use: {
     baseURL: 'https://www.saucedemo.com/',
+    actionTimeout: 10_000,
+    navigationTimeout: 15_000,   //page.goto/redirects
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',

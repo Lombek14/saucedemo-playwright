@@ -1,3 +1,4 @@
+
 export class InventoryPage {
     constructor(page) {
         this.page = page;
@@ -5,6 +6,7 @@ export class InventoryPage {
     }
     async addBackpackToCart() {
         await this.page.click('[data-test="add-to-cart-sauce-labs-backpack"]');
+         
     }
     async openCart() {
         await this.page.click(this.cart);
