@@ -16,7 +16,7 @@ export default defineConfig({
     navigationTimeout: 15_000,   //page.goto/redirects
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    trace: 'on-first-retry',
+    trace: process.env.CI ? 'on-first-retry' : 'off',
   },
 
   projects: [

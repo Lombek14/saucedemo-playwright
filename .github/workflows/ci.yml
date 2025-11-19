@@ -20,7 +20,7 @@ jobs:
       matrix:
         browser: [Chromium, Firefox, WebKit] #for clear report all 3 run at the same time
         shard: [1,2] # split into 2 VM in parallel
-        suite: [smoke, regression] # to run smoke and regression suites
+        suite: [smoke, regression, api] # to run smoke and regression suites
         
     steps:
       - name: Checkout
