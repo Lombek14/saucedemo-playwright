@@ -64,16 +64,43 @@ test.describe('@api Mahovastore hybrid API + UI tests', () => {
         await viewCartBtn.click();
 
         await page.waitForLoadState('domcontentloaded');
-
-        // Validate the shopping cart and the quantity of the cart badge 
-        const checkoutBtn = page.getByRole('button', { name: /CHECK OUT/i });
-        const cartBadge = page.getByRole('link', { name: '1' });
         await expect(shoppingCartPage).toBeVisible();
+
+        //----Validate the shopping cart, the quantity of the cart badge and subtotal---
+
+        // cart page subtotal
+        const cartSubtotalAmount = page
+          .locator('#MinimogCartFooter')
+          .getByText(/Subtotal/i)
+          .locator('+ *');
+
+        const cartSubtotalText = (await cartSubtotalAmount.innerText()).trim();
+        console.log('Cart subtotal:', cartSubtotalText);
+        
+        
+        // other cart check
+        const cartBadge = page.getByRole('link', { name: '1' });
+        const checkoutBtn = page.getByRole('button', { name: /CHECK OUT/i });
+
+        
         await expect(cartBadge).toHaveText(/[0-9]/);
-
+        await expect(cartSubtotalAmount).toBeVisible();
+        await expect(checkoutBtn).toBeVisible();
+        
+        // got to checkout
         await checkoutBtn.click();
-
         await page.waitForLoadState('domcontentloaded');
+
+        // checkout page subtotal 
+        const checkoutSubtotalAmount = page
+          .getByRole('row', { name: /Subtotal \$/i })
+          .getByText(/\$\d+\.\d{2}/);
+
+        const checkoutSubtotalText = (await checkoutSubtotalAmount.innerText()).trim();
+        console.log('Checkout subtotal:', checkoutSubtotalText);
+
+        // compare the two subtotal
+        await expect(checkoutSubtotalAmount).toHaveText(cartSubtotalText);
 
         // fill contact email and first/last name with API data to Delivery address
         const expressCheckout = page.getByRole('heading', { name: /Express checkout/i });
@@ -82,6 +109,7 @@ test.describe('@api Mahovastore hybrid API + UI tests', () => {
 
         await expect(expressCheckout).toBeVisible();
         await expect(contact).toBeVisible();
+
 
         const contactEmail = page.getByRole('textbox', { name: 'Email or mobile phone number' });
         const firstNameInput = page.getByRole('textbox', { name: 'First name' });
@@ -103,7 +131,7 @@ test.describe('@api Mahovastore hybrid API + UI tests', () => {
         await lastNameInput.fill(lastName);
         await expect(lastNameInput).toHaveValue('Weaver');
 
-        //Go back to cart (without placing any order)
+        // go back to cart (without placing any order)
         const returnToCart = page.getByRole('link', { name: 'Cart' });
         await expect(returnToCart).toBeVisible();
         await returnToCart.click();
@@ -113,18 +141,18 @@ test.describe('@api Mahovastore hybrid API + UI tests', () => {
         const product = page.getByText('Product', { exact: true });
         await expect(product).toBeVisible();
 
-        //Remove item from cart
+        // remove item from cart
         const removeProduct = page.getByText(/Remove/i);
         await expect(removeProduct).toBeVisible();
         await removeProduct.click();
 
         await page.waitForLoadState('domcontentloaded');
 
-        //Validate empty cart
+        // validate empty cart
         const emptyCartText = page.getByRole('heading', { name: 'Your cart is currently empty' });
         await expect(emptyCartText).toBeVisible();
 
-        //Click "BACK TO SHOPPING"
+        // click "BACK TO SHOPPING"
         const backToShopping = page.getByRole('link', { name: /Back to shopping/i })
         await expect(backToShopping).toBeVisible();
         await backToShopping.click();
