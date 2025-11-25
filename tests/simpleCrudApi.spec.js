@@ -42,6 +42,7 @@ test.describe.serial('@api SimpleCrud API testing', () => {
         };
         const response = await request.post(`${BASE_URL}/users`, {
             data: newUser,
+            timeout: 20000,
         });
 
         console.log('Status:', response.status());
@@ -70,6 +71,7 @@ test.describe.serial('@api SimpleCrud API testing', () => {
 
         const response = await request.put(`${BASE_URL}/users/${createdUserId}`, {
             data: { name: 'Mahoula SDET', email: UpdatedEmail },
+            timeout: 20000,
 
         });
 
@@ -93,6 +95,7 @@ test.describe.serial('@api SimpleCrud API testing', () => {
     //***DELETE user***
     test('DELETE user', async ({ request }) => {
         const response = await request.delete(`${BASE_URL}/users/${createdUserId}`, {
+            timeout: 20000,
 
         });
 

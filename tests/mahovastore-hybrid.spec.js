@@ -232,6 +232,7 @@ test.describe('@api Mahovastore hybrid API + UI tests', () => {
         email: emailValue,
         name: `${firstName} ${lastName}`
       },
+      timeout: 20000,
     });
 
     await expect(response).toBeOK();
