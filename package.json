@@ -9,9 +9,11 @@
     "pw:install": "playwright install --with-deps",
     "show-report": "playwright show-report"
   },
-  
   "devDependencies": {
     "@playwright/test": "^1.56.1"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^12.4.6"
+  }
 }
