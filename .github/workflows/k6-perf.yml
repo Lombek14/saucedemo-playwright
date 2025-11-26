@@ -1,10 +1,10 @@
 name: k6 performance tests
 
 on:
-  workflow_dispatch:      
+  workflow_dispatch:
   push:
     paths:
-      - "k6-tests/**"     
+      - "k6-tests/**"
 
 jobs:
   k6-tests:
@@ -31,11 +31,11 @@ jobs:
         continue-on-error: true
 
       - name: Run k6 spike test
-      - run: k6 run k6-tests/reqres-spike.js
+        run: k6 run k6-tests/reqres-spike.js
         continue-on-error: true
 
       - name: Run k6 load test
-      - run: k6 Run k6-tests/reqres-load.js
+        run: k6 run k6-tests/reqres-load.js
         continue-on-error: true
 
       - name: Upload k6 results
@@ -47,4 +47,3 @@ jobs:
             **/*.json
             **/*.html
           retention-days: 7
-
