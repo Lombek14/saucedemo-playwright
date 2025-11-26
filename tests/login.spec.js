@@ -14,3 +14,12 @@ await loginPage.login();
 
 await expect(page).toHaveURL(/inventory\.html/);
 });
+
+test('@negative invalid credentials show error', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.goto();
+  await loginPage.login('standard_user', 'wrong_password');
+
+  await expect(page.locator('[data-test="error"]')).toBeVisible();
+});
