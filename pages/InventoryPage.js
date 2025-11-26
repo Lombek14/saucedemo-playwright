@@ -6,8 +6,14 @@ export class InventoryPage {
     }
     async addBackpackToCart() {
         await this.page.click('[data-test="add-to-cart-sauce-labs-backpack"]');
-         
+
     }
+
+    async addBikeLightToCart() {
+        await this.page.click('[data-test="add-to-cart-sauce-labs-bike-light"]');
+    }
+
+
     async openCart() {
         await this.page.click(this.cart);
     }

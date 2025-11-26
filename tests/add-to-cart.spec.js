@@ -7,10 +7,15 @@ test.describe.configure({ mode: 'parallel' });
 test('Add item to cart', async ({ authPage }) => {
   const page = authPage;
 
-    const inv = new InventoryPage(page);
-    await inv.addBackpackToCart();
-    await inv.openCart(); 
+  const inv = new InventoryPage(page);
+  await inv.addBackpackToCart();
+  await inv.addBikeLightToCart();
+  await inv.openCart();
 
-    await expect(page.locator('.cart_item')).toHaveCount(1); // Verify that the backpack is in the cart
-    await expect(page.locator('.cart_item .inventory_item_name')).toHaveText('Sauce Labs Backpack'); // Verify the correct item is in the cart
+  await expect(page.locator('.cart_item')).toHaveCount(2); // Verify items added to cart
+
+  //validate the 2 items are in the cart
+  const itemNames = page.locator('.cart_item .inventory_item_name');
+  await expect(itemNames.nth(0)).toHaveText('Sauce Labs Backpack');
+  await expect(itemNames.nth(1)).toHaveText('Sauce Labs Bike Light');
 }); 
