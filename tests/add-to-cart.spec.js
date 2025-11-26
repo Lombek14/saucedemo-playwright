@@ -4,7 +4,7 @@ import { InventoryPage } from '../pages/InventoryPage';
 // Optional per-file parallel (global config is already parallel)
 test.describe.configure({ mode: 'parallel' });
 
-test('Add item to cart', async ({ authPage }) => {
+test('@smoke Add item to cart', async ({ authPage }) => {
   const page = authPage;
 
   const inv = new InventoryPage(page);
