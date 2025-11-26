@@ -14,6 +14,7 @@ test.describe('Complete checkout process (data-driven)', () => {
 
       // Add item and go to cart
       await inv.addBackpackToCart();
+      await inv.addBikeLightToCart();
       await inv.openCart();
 
 
