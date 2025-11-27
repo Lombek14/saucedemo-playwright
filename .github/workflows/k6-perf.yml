@@ -9,11 +9,11 @@ on:
 jobs:
   k6-tests:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        
+
       - name: Install k6
         run: |
           sudo gpg -k
@@ -21,30 +21,30 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
           sudo apt-get update
           sudo apt-get install k6
-          
+
       - name: Run k6 smoke test (Grafana Cloud)
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         run: k6 cloud k6-tests/reqres-smoke.js
-        
+
       - name: Run k6 load test (Grafana Cloud)
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         run: k6 cloud k6-tests/reqres-load.js
         continue-on-error: true
-        
+
       - name: Run k6 stress test (Grafana Cloud)
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         run: k6 cloud k6-tests/reqres-stress.js
         continue-on-error: true
-        
+
       - name: Run k6 spike test (Grafana Cloud)
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         run: k6 cloud k6-tests/reqres-spike.js
         continue-on-error: true
-        
+
       - name: Run k6 soak test (Grafana Cloud)
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
