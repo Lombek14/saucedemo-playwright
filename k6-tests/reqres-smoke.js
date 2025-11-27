@@ -2,8 +2,15 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export const options = {
-  vus: 10,          // 5 virtual users
+  vus: 10,          // 10 virtual users
   duration: '15s', // run test for 15 seconds
+
+  ext: {
+    loadimpact: {
+      projectID: 5843281,
+
+    }
+  }
 };
 
 export default function () {

@@ -8,6 +8,13 @@ export const options = {
     { duration: '15s', target: 100 },  // hold spike
     { duration: '10s', target: 0 },  // ramp down
   ],
+
+  ext: {
+    loadimpact: {
+      projectID: 5843281,
+
+    }
+  }
 };
 
 export default function () {

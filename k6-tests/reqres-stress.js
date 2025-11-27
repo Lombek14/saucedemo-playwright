@@ -9,6 +9,13 @@ export const options = {
     { duration: '20s', target: 150 },  // max stress: 100 -> 150
     { duration: '10s', target: 0 },    // ramp down: 150 -> 0
   ],
+
+  ext: {
+    loadimpact: {
+      projectID: 5843281,
+
+    }
+  }
 };
 
 export default function () {

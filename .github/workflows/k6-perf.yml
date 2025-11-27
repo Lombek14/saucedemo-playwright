@@ -1,4 +1,4 @@
-name: k6 performance tests
+name: k6 Performance Tests with Grafana Cloud
 
 on:
   workflow_dispatch:
@@ -9,41 +9,44 @@ on:
 jobs:
   k6-tests:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
+        
       - name: Install k6
         run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
           sudo apt-get update
-          sudo apt-get install -y k6
-
-      - name: Run k6 smoke test
-        run: k6 run k6-tests/reqres-smoke.js
-
-      - name: Run k6 stress test
-        run: k6 run k6-tests/reqres-stress.js
+          sudo apt-get install k6
+          
+      - name: Run k6 smoke test (Grafana Cloud)
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: k6 cloud k6-tests/reqres-smoke.js
+        
+      - name: Run k6 load test (Grafana Cloud)
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: k6 cloud k6-tests/reqres-load.js
         continue-on-error: true
-
-      - name: Run k6 soak test
-        run: k6 run k6-tests/reqres-soak.js
+        
+      - name: Run k6 stress test (Grafana Cloud)
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: k6 cloud k6-tests/reqres-stress.js
         continue-on-error: true
-
-      - name: Run k6 spike test
-        run: k6 run k6-tests/reqres-spike.js
+        
+      - name: Run k6 spike test (Grafana Cloud)
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: k6 cloud k6-tests/reqres-spike.js
         continue-on-error: true
-
-      - name: Run k6 load test
-        run: k6 run k6-tests/reqres-load.js
+        
+      - name: Run k6 soak test (Grafana Cloud)
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: k6 cloud k6-tests/reqres-soak.js
         continue-on-error: true
-
-      - name: Upload k6 results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: k6-results
-          path: |
-            **/*.json
-            **/*.html
-          retention-days: 7

@@ -4,6 +4,13 @@ import { check, sleep } from 'k6';
 export const options = {
   vus: 50,          // 50 virtual users
   duration: '2m', // for 2 minutes
+
+  ext: {
+    loadimpact: {
+      projectID: 5843281,
+
+    }
+  }
 };
 
 export default function () {
