@@ -13,7 +13,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-<<<<<<< HEAD
         
       - name: Install k6
         run: |
@@ -32,17 +31,6 @@ jobs:
         env:
           K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
         run: k6 cloud k6-tests/reqres-load.js
-=======
-
-      - name: Setup k6
-        uses: grafana/setup-k6-action@v0.1.0
-
-      - name: Run k6 smoke test
-        run: k6 run k6-tests/reqres-smoke.js
-
-      - name: Run k6 stress test
-        run: k6 run k6-tests/reqres-stress.js
->>>>>>> 168cb5740b3f5798d0dbd6a7a210ef836a0a4602
         continue-on-error: true
         
       - name: Run k6 stress test (Grafana Cloud)
