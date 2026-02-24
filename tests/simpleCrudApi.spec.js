@@ -2,7 +2,8 @@ import { test, expect, request } from '@playwright/test';
 
 const BASE_URL = 'https://simplecrudapi.com/api';
 
-test.describe.serial('@api SimpleCrud API testing', () => {
+test.describe('@external', () => {
+  test.describe.serial('@api SimpleCrud API testing', () => {
 
     let createdUserId;
     let createdEmail;
@@ -25,7 +26,6 @@ test.describe.serial('@api SimpleCrud API testing', () => {
         for (const user of body.data) {
             expect(user.email).toMatch(/@(example\.com|example\.org|example\.net)$/);
         }
-
 
         console.log('Get users:', body);
 
@@ -58,21 +58,18 @@ test.describe.serial('@api SimpleCrud API testing', () => {
 
         createdUserId = body.data.id;  // save dynamic id
 
-
         console.log('Create user:', body);
-
 
     });
 
 
-    //***PUT update user***
+    // ***PUT update user***
     test('PUT update user', async ({ request }) => {
         const UpdatedEmail = `user_${Date.now()}@example.com`;
 
         const response = await request.put(`${BASE_URL}/users/${createdUserId}`, {
             data: { name: 'Mahoula SDET', email: UpdatedEmail },
             timeout: 20000,
-
         });
 
         console.log('Status:', response.status());
@@ -85,18 +82,15 @@ test.describe.serial('@api SimpleCrud API testing', () => {
         expect(body.data).toBeDefined();
         expect(body.data.email).toBe(UpdatedEmail);
 
-
         console.log('Updated user:', body);
-
 
     });
 
 
-    //***DELETE user***
+    // ***DELETE user***
     test('DELETE user', async ({ request }) => {
         const response = await request.delete(`${BASE_URL}/users/${createdUserId}`, {
             timeout: 20000,
-
         });
 
         console.log('Status:', response.status());
@@ -104,10 +98,7 @@ test.describe.serial('@api SimpleCrud API testing', () => {
 
         expect([200, 204]).toContain(response.status());
 
-
     });
 
-
-});
-
-
+  }); // end @api describe
+}); // end @external describe

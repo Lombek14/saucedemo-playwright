@@ -6,6 +6,9 @@
   "scripts": {
     "test": "playwright test",
     "test:ci": "playwright test --reporter=line,html",
+    "test:all-except-mahovastore": "playwright test --grep-invert \"@mahovastore\"",
+    "test:clean": "playwright test --grep-invert \"@mahovastore|@external\"",
+    "test:external": "playwright test --grep \"@external\"",
     "pw:install": "playwright install --with-deps",
     "show-report": "playwright show-report"
   },

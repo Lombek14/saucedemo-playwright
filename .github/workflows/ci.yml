@@ -39,8 +39,20 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       
-      - name: Run tests Run tests (project=${{ matrix.browser }}, suite=@${{ matrix.suite }}, shard=${{ matrix.shard }}/2)
-        run: npx playwright test --project=${{ matrix.browser }} --grep=@${{ matrix.suite }} --shard=${{ matrix.shard }}/2 --reporter=github,html
+      - name: Run tests (project=${{ matrix.browser }}, suite=@${{ matrix.suite }}, shard=${{ matrix.shard }}/2)
+        env:
+          REQRES_API_KEY: ${{ secrets.REQRES_API_KEY }}
+        run: npx playwright test --project=${{ matrix.browser }} --grep=@${{ matrix.suite }} --grep-invert="@mahovastore|@external" --shard=${{ matrix.shard }}/2 --reporter=github,html
+
+      # Optional: run Mahovastore tests only when explicitly triggered.
+      # Set RUN_MAHOVASTORE=true + MAHOVASTORE_STAGING_URL in repo vars to enable.
+      # Runs Chromium only (no matrix) to avoid redundant cross-browser runs.
+      #
+      # - name: Run Mahovastore tests (optional, manual)
+      #   if: ${{ env.RUN_MAHOVASTORE == 'true' }}
+      #   env:
+      #     BASE_URL: ${{ vars.MAHOVASTORE_STAGING_URL }}
+      #   run: npx playwright test --grep @mahovastore --project=Chromium --reporter=github,html
 
       # Uses both 'github' (nice summary) and 'html' (artifact)
 

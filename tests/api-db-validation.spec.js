@@ -5,7 +5,12 @@ test.describe('@api @db API + DB validation', () => {
   test('ReqRes user matches DB record', async ({ request }) => {
     
     // --- ReqRes API ---
-    const response = await request.get('https://reqres.in/api/users/2');
+    const response = await request.get('https://reqres.in/api/users/2', {
+      headers: {
+        'User-Agent': 'qa-tests/1.0',
+        'x-api-key': process.env.REQRES_API_KEY || 'reqres-free-v1',
+      },
+    });
     await expect(response).toBeOK();
 
     const body = await response.json();
