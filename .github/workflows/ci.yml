@@ -44,7 +44,7 @@ jobs:
         run: npx playwright test --project=${{ matrix.browser }} --grep=@${{ matrix.suite }} --grep-invert="@mahovastore|@external" --shard=${{ matrix.shard }}/2 --reporter=github,html
 
       - name: Upload HTML report
-        if: ${{ !env.ACT && always() }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.browser }}-${{ matrix.suite }}-shard${{ matrix.shard }}
@@ -52,7 +52,7 @@ jobs:
           retention-days: 7
 
       - name: Upload traces & videos (on failure)
-        if: ${{ !env.ACT && failure() }}
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.browser }}-${{ matrix.suite }}-shard${{ matrix.shard }}
@@ -97,7 +97,7 @@ jobs:
       #   run: npx playwright test --grep @mahovastore --project=Chromium --reporter=github,html
 
       - name: Upload HTML report
-        if: ${{ !env.ACT && always() }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-api
@@ -105,7 +105,7 @@ jobs:
           retention-days: 7
 
       - name: Upload traces & videos (on failure)
-        if: ${{ !env.ACT && failure() }}
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-api
