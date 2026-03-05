@@ -15,7 +15,7 @@ await loginPage.login();
 await expect(page).toHaveURL(/inventory\.html/);
 });
 
-test('@negative invalid credentials show error', async ({ page }) => {
+test('@regression @negative invalid credentials show error', async ({ page }) => {
   const loginPage = new LoginPage(page);
 
   await loginPage.goto();
