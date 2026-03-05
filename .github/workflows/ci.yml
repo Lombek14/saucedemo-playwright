@@ -12,16 +12,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  # ── UI tests: @smoke and @regression across all browsers with sharding ──
+  ui-tests:
     runs-on: ubuntu-latest
-    
+
     strategy:
       fail-fast: false
       matrix:
-        browser: [Chromium, Firefox, WebKit] #for clear report all 3 run at the same time
-        shard: [1,2] # split into 2 VM in parallel
-        suite: [smoke, regression, api] # to run smoke and regression suites
-        
+        browser: [Chromium, Firefox, WebKit]
+        shard: [1, 2]
+        suite: [smoke, regression]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,23 +39,9 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      
-      - name: Run tests (project=${{ matrix.browser }}, suite=@${{ matrix.suite }}, shard=${{ matrix.shard }}/2)
-        env:
-          REQRES_API_KEY: ${{ secrets.REQRES_API_KEY }}
+
+      - name: Run UI tests (project=${{ matrix.browser }}, suite=@${{ matrix.suite }}, shard=${{ matrix.shard }}/2)
         run: npx playwright test --project=${{ matrix.browser }} --grep=@${{ matrix.suite }} --grep-invert="@mahovastore|@external" --shard=${{ matrix.shard }}/2 --reporter=github,html
-
-      # Optional: run Mahovastore tests only when explicitly triggered.
-      # Set RUN_MAHOVASTORE=true + MAHOVASTORE_STAGING_URL in repo vars to enable.
-      # Runs Chromium only (no matrix) to avoid redundant cross-browser runs.
-      #
-      # - name: Run Mahovastore tests (optional, manual)
-      #   if: ${{ env.RUN_MAHOVASTORE == 'true' }}
-      #   env:
-      #     BASE_URL: ${{ vars.MAHOVASTORE_STAGING_URL }}
-      #   run: npx playwright test --grep @mahovastore --project=Chromium --reporter=github,html
-
-      # Uses both 'github' (nice summary) and 'html' (artifact)
 
       - name: Upload HTML report
         if: ${{ !env.ACT && always() }}
@@ -71,4 +58,57 @@ jobs:
           name: test-results-${{ matrix.browser }}-${{ matrix.suite }}-shard${{ matrix.shard }}
           path: test-results
           retention-days: 7
-          if-no-files-found: ignore    # prevent no traces failure 
+          if-no-files-found: ignore
+
+  # ── API tests: @api on Chromium only, no sharding needed ──
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run API tests (Chromium only)
+        env:
+          REQRES_API_KEY: ${{ secrets.REQRES_API_KEY }}
+        run: npx playwright test --project=Chromium --grep=@api --grep-invert="@mahovastore|@external" --reporter=github,html
+
+      # Optional: run Mahovastore tests only when explicitly triggered.
+      # Set RUN_MAHOVASTORE=true + MAHOVASTORE_STAGING_URL in repo vars to enable.
+      # Runs Chromium only (no matrix) to avoid redundant cross-browser runs.
+      #
+      # - name: Run Mahovastore tests (optional, manual)
+      #   if: ${{ env.RUN_MAHOVASTORE == 'true' }}
+      #   env:
+      #     BASE_URL: ${{ vars.MAHOVASTORE_STAGING_URL }}
+      #   run: npx playwright test --grep @mahovastore --project=Chromium --reporter=github,html
+
+      - name: Upload HTML report
+        if: ${{ !env.ACT && always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-api
+          path: playwright-report
+          retention-days: 7
+
+      - name: Upload traces & videos (on failure)
+        if: ${{ !env.ACT && failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-api
+          path: test-results
+          retention-days: 7
+          if-no-files-found: ignore
