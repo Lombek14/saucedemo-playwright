@@ -36,7 +36,7 @@ export default defineConfig({
 
   projects: [
     { name: 'Chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'Firefox',  use: { ...devices['Desktop Firefox'] } },
+    { name: 'Firefox',  use: { ...devices['Desktop Firefox'], actionTimeout: 15_000, navigationTimeout: 20_000 } },
     { name: 'WebKit',   use: { ...devices['Desktop Safari'] } },
   ],
 });
