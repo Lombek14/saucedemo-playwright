@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "playwright test",
-    "test:ci": "playwright test --reporter=line,html",
+    "test:ci": "playwright test --grep-invert \"@mahovastore|@external\" --reporter=line,html",
     "test:clean": "playwright test --grep-invert \"@mahovastore|@external\"",
     "test:external": "playwright test --grep \"@external\"",
     "pw:install": "playwright install --with-deps",
